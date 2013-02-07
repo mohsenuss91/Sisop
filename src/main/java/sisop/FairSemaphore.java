@@ -7,10 +7,11 @@ import java.lang.Thread;
 public class FairSemaphore{
     int value;
     int inQueue;
+    Thread toWake;
     List<Thread> queue = new ArrayList<Thread>();
     
     public FairSemaphore() {
-        this.value = 0;
+        this.value = 1;
         this.inQueue = 0;
     }
     
@@ -23,27 +24,30 @@ public class FairSemaphore{
         return (inQueue == 0)?true:false;
     }
 
-    public synchronized void V() {
+    public synchronized void P() {
         try {
+            Thread t = Thread.currentThread(); 
             if (this.value == 0) {
                 this.inQueue++;
-                queue.add(Thread.currentThread());
-                wait();
+                queue.add(t);
+                System.out.println(t.getName() + " Sospeso");
+                while(t != toWake) wait();
+                System.out.println(t.getName() + " Risvegliato");
             }
             this.value--;    
+            System.out.println(t.getName() + " Eseguo");
         }
         catch (InterruptedException e) {
             System.err.println("Errore nella wait " + e);
         }
     }
 
-    public synchronized void P(){
+    public synchronized void V(){
         this.value++;
         if (this.inQueue != 0) {
-            Thread t = new Thread();
-            t = queue.remove(0);
+            toWake = queue.remove(0);
             this.inQueue--;
-            t.notify();
+            notifyAll();
         }
     }
 

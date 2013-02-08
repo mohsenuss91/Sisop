@@ -1,6 +1,7 @@
 package sisop;
 
 import sisop.FairSemaphore;
+import sisop.logging.Log;
 import java.util.Vector;
 
 
@@ -13,12 +14,11 @@ public class SynchPort<T> {
         buffer = new Vector<Message<T>>(nMitt);
         synchAdd = new FairSemaphore(0);
         synchRemove = new FairSemaphore(0);
-        synchReceive = new FairSemaphore();
+        synchReceive = new FairSemaphore(0);
         head = 0;
         tail = 0;
         count = 0;
         maxDim = nMitt;
-        System.out.println("SynchPort:Ho inizializzato tutto ");
     }
 
     public void sendTo( T message, String name ) {
@@ -28,31 +28,35 @@ public class SynchPort<T> {
             go=(count==maxDim)?false:true;
         }    
         if (!go) {
-            System.out.println("SynchPort:Attendo buffer vuoto");
+            Log.info(Thread.currentThread().getName() + ": Wait empty element in port");
+            //System.out.println(Thread.currentThread().getName() + ": Wait empty element in port");
             synchAdd.P();
         }
         synchronized(buffer){
             buffer.add(tail, app);
             tail = (tail+1)%maxDim;
             count++;
-        }
-        System.out.println("SynchPort:Inserito elemento nel buffer");
+            Log.info(Thread.currentThread().getName() + ": Insert message in port");
+            //System.out.println(Thread.currentThread().getName() + ": Insert message in port");
             
-        if (!synchReceive.isEmpty()) synchReceive.V();
-        System.out.println("SynchPort:Attendo che venga ricevuto");
-            
+            if (!synchReceive.isEmpty()) synchReceive.V();
+            Log.info(Thread.currentThread().getName() + ": Wait until message received");
+            //System.out.println(Thread.currentThread().getName() + ": Wait until message received");
+        }    
         synchRemove.P();
     }
 
     public Message<T> receiveFrom() {
-            System.out.println("SynchPort:Inizio receive");
-            Message<T> app;
+        Log.info(Thread.currentThread().getName() + ": Start receive");
+        //System.out.println(Thread.currentThread().getName() + ": Start receive");
+        Message<T> app;
             boolean go;
             synchronized(buffer){
                 go=(count==0)?false:true;
             }
             if (!go) {
-                System.out.println("SynchPort:Attendo che ci sia elemtno nel buffer");
+                Log.info(Thread.currentThread().getName() + ": Wait a element in port");
+                //System.out.println(Thread.currentThread().getName() + ": Wait a element in port");
                 
                 synchReceive.P();
             }
@@ -61,7 +65,8 @@ public class SynchPort<T> {
                 head = (head+1)%maxDim;
                 count--;
             }
-            System.out.println("SynchPort:Estraggo messaggio");
+            Log.info(Thread.currentThread().getName() + ": Extract message");
+            //System.out.println(Thread.currentThread().getName() + ": Extract message");
 
             synchRemove.V();            
             if (synchAdd.isEmpty()) synchAdd.V();

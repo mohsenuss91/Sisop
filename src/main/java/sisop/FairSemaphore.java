@@ -2,6 +2,7 @@ package sisop;
 
 import java.util.*;
 import java.lang.Thread;
+import sisop.logging.Log;
 
 
 public class FairSemaphore{
@@ -30,15 +31,19 @@ public class FairSemaphore{
             if (this.value == 0) {
                 this.inQueue++;
                 queue.add(t);
-                System.out.println("FairSemaphore: " + t.getName() + " Sospeso");
+                Log.info("FairSemaphore: " + t.getName() + " Wait");
+                //System.out.println("FairSemaphore: " + t.getName() + " Wait");
                 while(t != toWake) wait();
-                System.out.println("FairSemaphore: " + t.getName() + " Risvegliato");
+                Log.info("FairSemaphore: " + t.getName() + " WakeUp");
+                //System.out.println("FairSemaphore: " + t.getName() + " WakeUp");
             }
             this.value--;    
-            System.out.println("FairSemaphore: " + t.getName() + " Eseguo");
+            Log.info("FairSemaphore: " + t.getName() + " Do somethings");
+            //System.out.println("FairSemaphore: " + t.getName() + " Do somethings");
         }
         catch (InterruptedException e) {
-            System.err.println("Errore nella wait " + e);
+            Log.severe("Wait Error " + e);
+            //System.err.println("Wait Error " + e);
         }
     }
 

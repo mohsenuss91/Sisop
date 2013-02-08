@@ -3,6 +3,7 @@ package sisop;
 import sisop.FairSemaphore;
 import sisop.Prova;
 import sisop.SynchPort;
+import sisop.logging.Log;
 import java.lang.Thread;
 import java.lang.Integer;
 
@@ -34,12 +35,17 @@ public class Test{
             
         // }
         try {
-            Dest dest = new Dest();
-            Mitt mitt = new Mitt(dest);
+            Log.setup("test.log");
+            Dest dest = new Dest("Dest1");
+            Mitt[] mitt = new Mitt[5];
             dest.start();
             Thread.sleep(100);
-            mitt.start();
             
+            for (int i = 0; i < 5; ++i) {
+                mitt[i] = new Mitt(dest, "Mitt" + i);
+                mitt[i].start();
+            }
+                      
         }
         catch (Exception e) {
             

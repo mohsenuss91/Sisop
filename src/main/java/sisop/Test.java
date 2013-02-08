@@ -6,7 +6,7 @@ import java.lang.Thread;
 
 public class Test{
     public static void main(String[] args) {
-        FairSemaphore sem = new FairSemaphore();
+        FairSemaphore sem = new FairSemaphore(15);
         Prova[] p = new Prova[50];
         for (int i = 0; i < 50; ++i) {
             p[i] = new Prova(sem, "Thread"+i);

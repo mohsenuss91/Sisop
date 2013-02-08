@@ -25,7 +25,7 @@ public class SynchPort<T> {
         Message<T> app = new Message<T>(message, name);
         boolean go;
         synchronized(buffer){
-            go=(count==maxDim)?false:true;
+            go=(count==(maxDim-1))?false:true;
         }    
         if (!go) {
             Log.info(Thread.currentThread().getName() + ": Wait empty element in port");
@@ -33,7 +33,12 @@ public class SynchPort<T> {
             synchAdd.P();
         }
         synchronized(buffer){
-            buffer.add(tail, app);
+            try {
+                buffer.setElementAt(app, tail);    
+            }
+            catch (ArrayIndexOutOfBoundsException e) {
+                buffer.add(tail, app);
+            }
             tail = (tail+1)%maxDim;
             count++;
             Log.info(Thread.currentThread().getName() + ": Insert message in port");
@@ -42,7 +47,8 @@ public class SynchPort<T> {
             if (!synchReceive.isEmpty()) synchReceive.V();
             Log.info(Thread.currentThread().getName() + ": Wait until message received");
             //System.out.println(Thread.currentThread().getName() + ": Wait until message received");
-        }    
+        }
+        //FIXME: fare in modo che dopo il blocco synchronized venga effettuata subito la P() altrimenti ci sta inversione di priorità
         synchRemove.P();
     }
 
@@ -67,9 +73,11 @@ public class SynchPort<T> {
             }
             Log.info(Thread.currentThread().getName() + ": Extract message");
             //System.out.println(Thread.currentThread().getName() + ": Extract message");
-
             synchRemove.V();            
-            if (synchAdd.isEmpty()) synchAdd.V();
+            if (!synchAdd.isEmpty()){
+                Log.severe("Devo risvegliare per inserimento buffer");
+                synchAdd.V();
+            }
             return app;
         }
 }

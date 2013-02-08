@@ -35,13 +35,13 @@ public class Test{
             
         // }
         try {
-            Log.setup("test.log");
+            Log.setup("../test.log");
             Dest dest = new Dest("Dest1");
-            Mitt[] mitt = new Mitt[5];
+            Mitt[] mitt = new Mitt[10];
             dest.start();
             Thread.sleep(100);
             
-            for (int i = 0; i < 5; ++i) {
+            for (int i = 0; i < 10; ++i) {
                 mitt[i] = new Mitt(dest, "Mitt" + i);
                 mitt[i].start();
             }

@@ -18,28 +18,51 @@ public class SynchPort<T> {
         tail = 0;
         count = 0;
         maxDim = nMitt;
+        System.out.println("SynchPort:Ho inizializzato tutto ");
     }
 
-    public synchronized void sendTo( T message, String name ) {
+    public void sendTo( T message, String name ) {
         Message<T> app = new Message<T>(message, name);
-        if (count==maxDim) {
+        boolean go;
+        synchronized(buffer){
+            go=(count==maxDim)?false:true;
+        }    
+        if (!go) {
+            System.out.println("SynchPort:Attendo buffer vuoto");
             synchAdd.P();
         }
-        buffer.add(tail, app);
-        tail = (tail+1)%maxDim;
-        count++;
+        synchronized(buffer){
+            buffer.add(tail, app);
+            tail = (tail+1)%maxDim;
+            count++;
+        }
+        System.out.println("SynchPort:Inserito elemento nel buffer");
+            
         if (!synchReceive.isEmpty()) synchReceive.V();
+        System.out.println("SynchPort:Attendo che venga ricevuto");
+            
         synchRemove.P();
     }
 
-    public synchronized Message<T> receiveFrom() {
+    public Message<T> receiveFrom() {
+            System.out.println("SynchPort:Inizio receive");
             Message<T> app;
-            if (count==0) {
+            boolean go;
+            synchronized(buffer){
+                go=(count==0)?false:true;
+            }
+            if (!go) {
+                System.out.println("SynchPort:Attendo che ci sia elemtno nel buffer");
+                
                 synchReceive.P();
             }
-            app = buffer.get(head);
-            head = (head+1)%maxDim;
-            count--;
+            synchronized(buffer){
+                app = buffer.get(head);
+                head = (head+1)%maxDim;
+                count--;
+            }
+            System.out.println("SynchPort:Estraggo messaggio");
+
             synchRemove.V();            
             if (synchAdd.isEmpty()) synchAdd.V();
             return app;

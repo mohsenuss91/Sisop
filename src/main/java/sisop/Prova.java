@@ -1,6 +1,8 @@
 package sisop;
 
 import java.lang.Thread;
+import java.lang.Integer;
+import sisop.*;
 
 class Prova extends Thread {
     FairSemaphore sem;
@@ -15,3 +17,4 @@ class Prova extends Thread {
     }
     
 }
+

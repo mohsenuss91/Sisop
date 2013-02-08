@@ -32,18 +32,14 @@ public class FairSemaphore{
                 this.inQueue++;
                 queue.add(t);
                 Log.info("FairSemaphore: " + t.getName() + " Wait");
-                //System.out.println("FairSemaphore: " + t.getName() + " Wait");
                 while(t != toWake) wait();
                 Log.info("FairSemaphore: " + t.getName() + " WakeUp");
-                //System.out.println("FairSemaphore: " + t.getName() + " WakeUp");
             }
             this.value--;    
             Log.info("FairSemaphore: " + t.getName() + " Do somethings");
-            //System.out.println("FairSemaphore: " + t.getName() + " Do somethings");
         }
         catch (InterruptedException e) {
             Log.severe("Wait Error " + e);
-            //System.err.println("Wait Error " + e);
         }
     }
 

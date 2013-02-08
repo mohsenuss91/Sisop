@@ -19,10 +19,8 @@ public class Dest extends Thread {
             while (true){
                 Thread.sleep(200);
                 Log.info(Thread.currentThread().getName() + ": receiveFrom()");
-                //System.out.println(Thread.currentThread().getName() + ": receiveFrom()");
                 app = port.receiveFrom();
                 Log.info(Thread.currentThread().getName() + ": Received. Data: " + app.message + " from " + app.threadName);
-                //System.out.println(Thread.currentThread().getName() + ": Received. Data: " + app.message + " from " + app.threadName);
             }
         }
         catch (Exception e) {

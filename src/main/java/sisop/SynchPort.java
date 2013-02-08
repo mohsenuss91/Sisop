@@ -29,7 +29,6 @@ public class SynchPort<T> {
         }    
         if (!go) {
             Log.info(Thread.currentThread().getName() + ": Wait empty element in port");
-            //System.out.println(Thread.currentThread().getName() + ": Wait empty element in port");
             synchAdd.P();
         }
         synchronized(buffer){
@@ -42,11 +41,9 @@ public class SynchPort<T> {
             tail = (tail+1)%maxDim;
             count++;
             Log.info(Thread.currentThread().getName() + ": Insert message in port");
-            //System.out.println(Thread.currentThread().getName() + ": Insert message in port");
             
             if (!synchReceive.isEmpty()) synchReceive.V();
             Log.info(Thread.currentThread().getName() + ": Wait until message received");
-            //System.out.println(Thread.currentThread().getName() + ": Wait until message received");
         }
         //FIXME: fare in modo che dopo il blocco synchronized venga effettuata subito la P() altrimenti ci sta inversione di priorità
         synchRemove.P();
@@ -54,7 +51,6 @@ public class SynchPort<T> {
 
     public Message<T> receiveFrom() {
         Log.info(Thread.currentThread().getName() + ": Start receive");
-        //System.out.println(Thread.currentThread().getName() + ": Start receive");
         Message<T> app;
             boolean go;
             synchronized(buffer){
@@ -62,7 +58,6 @@ public class SynchPort<T> {
             }
             if (!go) {
                 Log.info(Thread.currentThread().getName() + ": Wait a element in port");
-                //System.out.println(Thread.currentThread().getName() + ": Wait a element in port");
                 
                 synchReceive.P();
             }
@@ -72,7 +67,6 @@ public class SynchPort<T> {
                 count--;
             }
             Log.info(Thread.currentThread().getName() + ": Extract message");
-            //System.out.println(Thread.currentThread().getName() + ": Extract message");
             synchRemove.V();            
             if (!synchAdd.isEmpty()){
                 Log.severe("Devo risvegliare per inserimento buffer");

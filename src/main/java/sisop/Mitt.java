@@ -21,11 +21,9 @@ public class Mitt extends Thread {
         try {
             this.port = this.dest.getPort();
             Log.info(Thread.currentThread().getName() + ": sendTo()");
-            //System.out.println(Thread.currentThread().getName() + ": sendTo()");
             this.port.sendTo(1,Thread.currentThread().getName());
             Thread.sleep(100);
             Log.info(Thread.currentThread().getName() + ": Message received");
-            //System.out.println(Thread.currentThread().getName() + ": Message received");
             
         }
         catch (Exception e) {

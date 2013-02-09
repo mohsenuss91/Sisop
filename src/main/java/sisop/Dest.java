@@ -8,7 +8,7 @@ import sisop.logging.Log;
 
 
 public class Dest extends Thread {
-    public SynchPort<Integer> port = new SynchPort<Integer>(5);
+    public SynchPort<Integer> port = new SynchPort<Integer>(2);
 
     public Dest(String name){
         super(name);

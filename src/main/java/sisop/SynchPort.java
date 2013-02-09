@@ -12,7 +12,7 @@ public class SynchPort<T> {
 
     public SynchPort(int nMitt) {
         buffer = new Vector<Message<T>>(nMitt);
-        synchAdd = new FairSemaphore(0);
+        synchAdd = new FairSemaphore(nMitt);
         synchRemove = new FairSemaphore(0);
         synchReceive = new FairSemaphore(0);
         head = 0;
@@ -23,14 +23,7 @@ public class SynchPort<T> {
 
     public void sendTo( T message, String name ) {
         Message<T> app = new Message<T>(message, name);
-        boolean go;
-        synchronized(buffer){
-            go=(count==(maxDim-1))?false:true;
-        }    
-        if (!go) {
-            Log.info(Thread.currentThread().getName() + ": Wait empty element in port");
-            synchAdd.P();
-        }
+        synchAdd.P();
         synchronized(buffer){
             try {
                 buffer.setElementAt(app, tail);    
@@ -41,39 +34,27 @@ public class SynchPort<T> {
             tail = (tail+1)%maxDim;
             count++;
             Log.info(Thread.currentThread().getName() + ": Insert message in port");
-            
-            if (!synchReceive.isEmpty()) synchReceive.V();
+            synchReceive.V();
             Log.info(Thread.currentThread().getName() + ": Wait until message received");
         }
-        //FIXME: fare in modo che dopo il blocco synchronized venga effettuata subito la P() altrimenti ci sta inversione di priorità
         synchRemove.P();
+        synchAdd.V();
     }
 
     public Message<T> receiveFrom() {
         Log.info(Thread.currentThread().getName() + ": Start receive");
         Message<T> app;
-            boolean go;
-            synchronized(buffer){
-                go=(count==0)?false:true;
-            }
-            if (!go) {
-                Log.info(Thread.currentThread().getName() + ": Wait a element in port");
-                
-                synchReceive.P();
-            }
-            synchronized(buffer){
-                app = buffer.get(head);
-                head = (head+1)%maxDim;
-                count--;
-            }
-            Log.info(Thread.currentThread().getName() + ": Extract message");
-            synchRemove.V();            
-            if (!synchAdd.isEmpty()){
-                Log.severe("Devo risvegliare per inserimento buffer");
-                synchAdd.V();
-            }
-            return app;
+        synchReceive.P();
+        synchronized(buffer){
+            app = buffer.get(head);
+            head = (head+1)%maxDim;
+            count--;
+        
+        Log.info(Thread.currentThread().getName() + ": Extract message");
+        synchRemove.V();
         }
+        return app;
+    }
 }
 
 

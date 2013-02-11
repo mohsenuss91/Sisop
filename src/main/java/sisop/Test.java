@@ -8,6 +8,8 @@ import java.lang.Thread;
 import java.lang.Integer;
 
 public class Test{
+    public static Dest[] dest = new Dest[3];
+    
     public static void main(String[] args) {
         // FairSemaphore sem = new FairSemaphore(0);
         // Prova[] p = new Prova[5];
@@ -36,13 +38,14 @@ public class Test{
         // }
         try {
             Log.setup("../test.log");
-            Dest dest = new Dest("Dest1");
-            Mitt[] mitt = new Mitt[5];
-            dest.start();
-            Thread.sleep(100);
-            
-            for (int i = 0; i < 5; ++i) {
-                mitt[i] = new Mitt(dest, "Mitt" + i);
+            //Dest[] dest = new Dest[3];
+            Mitt[] mitt = new Mitt[10];
+            for (int j = 0; j < 3; ++j) {
+                dest[j] = new Dest("Dest" + j);
+                dest[j].start();
+            }
+            for (int i = 0; i < 10; ++i) {
+                mitt[i] = new Mitt("Mitt" + i);
                 mitt[i].start();
             }
                       
@@ -52,5 +55,10 @@ public class Test{
         }
         
         
+    }
+
+
+    public static Dest getDest(int n) {
+        return dest[n];
     }
 }

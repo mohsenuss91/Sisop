@@ -8,16 +8,18 @@ import sisop.logging.Log;
 
 
 public class Dest extends Thread {
-    public SynchPort<Integer> port = new SynchPort<Integer>(2);
+    public SynchPort<Integer> port = new SynchPort<Integer>(1);
+    public String name;
 
     public Dest(String name){
         super(name);
+        this.name = name;
     }
     public void run () {
         try {
             Message<Integer> app;
             while (true){
-                Thread.sleep(200);
+                Thread.sleep(2000);
                 Log.info(Thread.currentThread().getName() + ": receiveFrom()");
                 app = port.receiveFrom();
                 Log.info(Thread.currentThread().getName() + ": Received. Data: " + app.message + " from " + app.threadName);
@@ -29,7 +31,10 @@ public class Dest extends Thread {
     }
 
     public SynchPort<Integer> getPort() {
-        return port;
+        return this.port;
     }
     
+    // public String getName() {
+    //     return this.name;;
+    // }
 }

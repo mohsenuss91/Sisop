@@ -19,6 +19,7 @@ public class PortVector<T> {
         this.synchReceive = new FairSemaphore(0);
         this.vector = new Vector<SynchPort<T>>(numberOfPorts);
         this.messageInQueue = new int[numberOfPorts];
+        this.messageRequired = new boolean[numberOfPorts];
         for (int i = 0; i < numberOfPorts; i++) {
             this.vector.add(i, new SynchPort<T>(PORT_DIM));
             this.messageInQueue[i] = 0;
@@ -70,7 +71,9 @@ public class PortVector<T> {
         return result;
     }
 
-//Not Synchronized, lock is inherited
+
+
+    //Not Synchronized, lock is inherited
     void setRequiredPorts(int[] indexes, int length) {
         for (int i = 0; i < length; i++) {
             this.messageRequired[indexes[i]] = true;
@@ -79,7 +82,7 @@ public class PortVector<T> {
     }
 
 
-//Not Synchronized, lock is inherited
+    //Not Synchronized, lock is inherited
     void resetPorts() {
         for (int i = 0; i < this.numberOfPorts; i++) {
             this.messageRequired[i] = false;
@@ -88,7 +91,7 @@ public class PortVector<T> {
     } 
 
 
-//Not Synchronized, lock is inherited
+    //Not Synchronized, lock is inherited
     int getIndex(int[] indexes, int length) {
         int index = -1;
         for (int i = 0; i < length; i++) {

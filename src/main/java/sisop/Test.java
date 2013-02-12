@@ -4,6 +4,8 @@ import sisop.FairSemaphore;
 import sisop.Prova;
 import sisop.SynchPort;
 import sisop.PortVector;
+import sisop.Mitt;
+import sisop.Dest;
 import sisop.logging.Log;
 import java.lang.Thread;
 import java.lang.Integer;
@@ -67,9 +69,7 @@ public class Test{
             Mitt[] mitt = new Mitt[10];
             for (int j = 0; j < 3; j++) {
                 dest[j] = new Dest("Dest" + j);
-                Log.info("Dest instanziati");
                 dest[j].start();
-                Log.info("Dest Partito");
             }
             for (int i = 0; i < 10; ++i) {
                 mitt[i] = new Mitt("Mitt" + i);

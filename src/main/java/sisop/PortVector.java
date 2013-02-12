@@ -15,7 +15,7 @@ public class PortVector<T> {
     boolean[] messageRequired;
     boolean isEmptyRequest;
 
-    public PortVector(int numberOfPorts, String name) {
+    public PortVector(int numberOfPorts) {
         this.synchReceive = new FairSemaphore(0);
         this.vector = new Vector<SynchPort<T>>(numberOfPorts);
         this.messageInQueue = new int[numberOfPorts];
@@ -70,6 +70,7 @@ public class PortVector<T> {
         return result;
     }
 
+//Not Synchronized, lock is inherited
     void setRequiredPorts(int[] indexes, int length) {
         for (int i = 0; i < length; i++) {
             this.messageRequired[indexes[i]] = true;
@@ -77,6 +78,8 @@ public class PortVector<T> {
         this.isEmptyRequest = false;
     }
 
+
+//Not Synchronized, lock is inherited
     void resetPorts() {
         for (int i = 0; i < this.numberOfPorts; i++) {
             this.messageRequired[i] = false;
@@ -85,7 +88,7 @@ public class PortVector<T> {
     } 
 
 
-//FIXME deve essere synchronized???
+//Not Synchronized, lock is inherited
     int getIndex(int[] indexes, int length) {
         int index = -1;
         for (int i = 0; i < length; i++) {

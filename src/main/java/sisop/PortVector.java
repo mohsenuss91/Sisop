@@ -34,7 +34,6 @@ public class PortVector<T> {
 
     public void sendTo(int portIndex, T message, String name) {
         Log.info(name + ": PortVector sendTo()");
-        this.vector.get(portIndex).sendTo(message, name);
         synchronized(messageInQueue){
             this.messageInQueue[portIndex]++;
             this.countMessage++;
@@ -42,6 +41,7 @@ public class PortVector<T> {
                 this.synchReceive.V();
             }
         }
+        this.vector.get(portIndex).sendTo(message, name);
     }
 
     public MessageReceived<T> receiveFrom(int[] portIndex, int length) {
@@ -65,6 +65,7 @@ public class PortVector<T> {
                 resetPorts();
             }    
         }        
+        Log.info(Thread.currentThread().getName() + " Index: " + index);
         Message<T> app;
         app = this.vector.get(index).receiveFrom();
         MessageReceived<T> result = new MessageReceived<T>(app.message, app.threadName, index);

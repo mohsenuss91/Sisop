@@ -1,7 +1,6 @@
 package sisop;
 
 import sisop.FairSemaphore;
-import sisop.Prova;
 import sisop.SynchPort;
 import sisop.PortVector;
 import sisop.Mitt;
@@ -66,12 +65,12 @@ public class Test{
         //-------------Test PortVector---------------
         try {
             Log.setup("../test.log");
-            Mitt[] mitt = new Mitt[10];
+            Mitt[] mitt = new Mitt[20];
             for (int j = 0; j < 3; j++) {
                 dest[j] = new Dest("Dest" + j);
                 dest[j].start();
             }
-            for (int i = 0; i < 10; ++i) {
+            for (int i = 0; i < 20; ++i) {
                 mitt[i] = new Mitt("Mitt" + i);
                 mitt[i].start();
             }

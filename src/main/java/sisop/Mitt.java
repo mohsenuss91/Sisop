@@ -28,14 +28,13 @@ public class Mitt extends Thread {
             this.port = this.dest[j].getPort();
             Log.info(Thread.currentThread().getName() + ": sendTo() " + this.dest[j].name + " to Port: " + k);
             this.port.sendTo(k, 1,Thread.currentThread().getName());
-            Thread.sleep(1000);
             Log.info(Thread.currentThread().getName() + ": Message received");
-            // j = (j+1)%2;
-            // this.port = this.dest[j].getPort();
-            // Log.info(Thread.currentThread().getName() + ": sendTo() " + this.dest[j].name);
-            // this.port.sendTo(0, 1,Thread.currentThread().getName());
-            // Thread.sleep(100);
-            // Log.info(Thread.currentThread().getName() + ": Message received");
+            j = (j+1)%2;
+            k = (k+1)%5;
+            this.port = this.dest[j].getPort();
+            Log.info(Thread.currentThread().getName() + ": sendTo() " + this.dest[j].name + " to Port: " + k);
+            this.port.sendTo(k, 1,Thread.currentThread().getName());
+            Log.info(Thread.currentThread().getName() + ": Message received");
             
 }
         catch (Exception e) {

@@ -35,14 +35,14 @@ public class SynchPort<T> {
             count++;
             Log.info(Thread.currentThread().getName() + ": Insert message in port");
             synchReceive.V();
-            Log.info(Thread.currentThread().getName() + ": Wait until message received");
+            //Log.info(Thread.currentThread().getName() + ": Wait until message received");
         }
         synchRemove.P();
         synchAdd.V();
     }
 
     public Message<T> receiveFrom() {
-        Log.info(Thread.currentThread().getName() + ": Start receive");
+        //Log.info(Thread.currentThread().getName() + ": Start receive");
         Message<T> app;
         synchReceive.P();
         synchronized(buffer){
@@ -50,7 +50,7 @@ public class SynchPort<T> {
             head = (head+1)%maxDim;
             count--;
         
-        Log.info(Thread.currentThread().getName() + ": Extract message");
+            //Log.info(Thread.currentThread().getName() + ": Extract message");
         synchRemove.V();
         }
         return app;

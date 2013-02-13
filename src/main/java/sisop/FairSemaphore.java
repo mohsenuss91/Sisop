@@ -35,7 +35,8 @@ public class FairSemaphore{
                 while(t != toWake) wait();
                 //Log.info("FairSemaphore: " + t.getName() + " WakeUp");
             }
-            this.value--;    
+            this.value--;
+            this.toWake = null;
             //Log.info("FairSemaphore: " + t.getName() + " Do somethings");
         }
         catch (InterruptedException e) {

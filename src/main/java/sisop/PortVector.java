@@ -33,11 +33,12 @@ public class PortVector<T> {
     }
 
     public void sendTo(int portIndex, T message, String name) {
-        Log.info(name + ": PortVector sendTo()");
+        //Log.info(name + ": PortVector sendTo()");
         synchronized(messageInQueue){
             this.messageInQueue[portIndex]++;
             this.countMessage++;
             if (!this.isEmptyRequest && this.messageRequired[portIndex]) {
+                Log.info(Thread.currentThread().getName() + ": Sveglio destinatario in attesa");
                 this.synchReceive.V();
             }
         }
@@ -50,13 +51,16 @@ public class PortVector<T> {
             if (this.countMessage > 0) {
                 //Check if there is a message in required port
                 index = getIndex(portIndex, length);
-            }else {
+            }
+            if (index == -1) {
                 //Set the port required
                 setRequiredPorts(portIndex, length);
             }
         }
         if (index == -1) {
+            Log.info(Thread.currentThread().getName() + " Mi fermo in attesa");
             synchReceive.P();
+            Log.info(Thread.currentThread().getName() + " Svegliato");
             //Wakeup by a sendTo in a required port
             synchronized(messageInQueue){
                 //Check the first message in required port

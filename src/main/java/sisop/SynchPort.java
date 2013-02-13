@@ -7,18 +7,17 @@ import java.util.Vector;
 
 public class SynchPort<T> {
     Vector<Message<T>> buffer;
-    int head, tail, count, maxDim;
+    int head, tail, maxDim;
     FairSemaphore synchAdd, synchRemove, synchReceive;
 
     public SynchPort(int nMitt) {
-        buffer = new Vector<Message<T>>(nMitt);
-        synchAdd = new FairSemaphore(nMitt);
-        synchRemove = new FairSemaphore(0);
-        synchReceive = new FairSemaphore(0);
-        head = 0;
-        tail = 0;
-        count = 0;
-        maxDim = nMitt;
+        this.buffer = new Vector<Message<T>>(nMitt);
+        this.synchAdd = new FairSemaphore(nMitt);
+        this.synchRemove = new FairSemaphore(0);
+        this.synchReceive = new FairSemaphore(0);
+        this.head = 0;
+        this.tail = 0;
+        this.maxDim = nMitt;
     }
 
     public void sendTo( T message, String name ) {
@@ -32,7 +31,6 @@ public class SynchPort<T> {
                 buffer.add(tail, app);
             }
             tail = (tail+1)%maxDim;
-            count++;
             Log.info(Thread.currentThread().getName() + ": Insert message in port");
             synchReceive.V();
             //Log.info(Thread.currentThread().getName() + ": Wait until message received");
@@ -48,10 +46,9 @@ public class SynchPort<T> {
         synchronized(buffer){
             app = buffer.get(head);
             head = (head+1)%maxDim;
-            count--;
         
             //Log.info(Thread.currentThread().getName() + ": Extract message");
-        synchRemove.V();
+            synchRemove.V();
         }
         return app;
     }

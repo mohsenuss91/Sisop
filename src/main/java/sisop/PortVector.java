@@ -7,7 +7,7 @@ import sisop.FairSemaphore;
 
 
 public class PortVector<T> {
-    public static final int PORT_DIM = 5; 
+    public static final int PORT_DIM = 2; 
     Vector<SynchPort<T>> vector;
     FairSemaphore synchReceive;
     int[] messageInQueue;
@@ -38,7 +38,7 @@ public class PortVector<T> {
             this.messageInQueue[portIndex]++;
             this.countMessage++;
             if (!this.isEmptyRequest && this.messageRequired[portIndex]) {
-                Log.info(Thread.currentThread().getName() + ": Sveglio destinatario in attesa");
+                Log.info(Thread.currentThread().getName() + ": WakeUp blocked Receiver");
                 this.synchReceive.V();
             }
         }
@@ -58,9 +58,9 @@ public class PortVector<T> {
             }
         }
         if (index == -1) {
-            Log.info(Thread.currentThread().getName() + " Mi fermo in attesa");
+            Log.info(Thread.currentThread().getName() + ": Wait message");
             synchReceive.P();
-            Log.info(Thread.currentThread().getName() + " Svegliato");
+            Log.info(Thread.currentThread().getName() + ": WakeUp");
             //Wakeup by a sendTo in a required port
             synchronized(messageInQueue){
                 //Check the first message in required port
@@ -69,7 +69,7 @@ public class PortVector<T> {
                 resetPorts();
             }    
         }        
-        Log.info(Thread.currentThread().getName() + " Index: " + index);
+        //Log.info(Thread.currentThread().getName() + " Index: " + index);
         Message<T> app;
         app = this.vector.get(index).receiveFrom();
         MessageReceived<T> result = new MessageReceived<T>(app.message, app.threadName, index);

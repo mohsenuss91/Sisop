@@ -10,7 +10,7 @@ import java.lang.Thread;
 import java.lang.Integer;
 
 public class Test{
-    public static Dest[] dest = new Dest[3];
+    public static Dest[] dest = new Dest[5];
     
     public static void main(String[] args) {
         
@@ -65,12 +65,12 @@ public class Test{
         //-------------Test PortVector---------------
         try {
             Log.setup("../test.log");
-            Mitt[] mitt = new Mitt[20];
-            for (int j = 0; j < 3; j++) {
+            Mitt[] mitt = new Mitt[50];
+            for (int j = 0; j < 5; j++) {
                 dest[j] = new Dest("Dest" + j);
                 dest[j].start();
             }
-            for (int i = 0; i < 20; ++i) {
+            for (int i = 0; i < 50; i++) {
                 mitt[i] = new Mitt("Mitt" + i);
                 mitt[i].start();
             }

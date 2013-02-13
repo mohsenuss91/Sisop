@@ -26,7 +26,7 @@ public class Dest extends Thread {
         try {
             MessageReceived<Integer> app;
             while (true){
-                Thread.sleep(2000);
+                Thread.sleep(200);
                 Log.info(Thread.currentThread().getName() + ": receiveFrom()");
                 app = port.receiveFrom(array, arrayLength);
                 Log.info(Thread.currentThread().getName() + ": Received. Data: " + app.message + " from: " + app.threadName + " from port: " + app.portIndex);

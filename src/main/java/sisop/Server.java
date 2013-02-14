@@ -17,10 +17,12 @@ public class Server extends Thread {
     int portNumber;
 
     public Server() {
+        super("Server");
         this.mailbox = new PortVector<Integer>(5);
         this.synchAdd = new FairSemaphore(3);
         this.synchReceive = new FairSemaphore(0);
         this.buffer = new Vector<Message<Integer>>(3);
+        this.portSelected = new int[5];
         this.tail = 0;
         this.head = 0;
         this.portNumber = 5;
@@ -45,7 +47,7 @@ public class Server extends Thread {
                 }
                 this.tail = (tail+1)%3;   
             }
-            Log.info(Thread.currentThread().getName() + "Message received from: " + message.threadName);                
+            Log.info(Thread.currentThread().getName() + ": Message received from: " + message.threadName);                
             synchReceive.V();
         }
     }
@@ -58,7 +60,7 @@ public class Server extends Thread {
             message = this.buffer.get(head);
             head = (head+1)%3;
         }
-        Log.info(Thread.currentThread().getName() + "Message received from: " + message.threadName + " Value: " + message.message);
+        Log.info(Thread.currentThread().getName() + ": Message received from: " + message.threadName + " Value: " + message.message);
         synchAdd.V();
         return message;
     }

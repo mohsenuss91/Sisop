@@ -7,7 +7,7 @@ import sisop.FairSemaphore;
 
 
 public class PortVector<T> {
-    public static final int PORT_DIM = 2; 
+    public static final int PORT_DIM = 1; 
     Vector<SynchPort<T>> vector;
     FairSemaphore synchReceive;
     int[] messageInQueue;
@@ -40,6 +40,10 @@ public class PortVector<T> {
             if (!this.isEmptyRequest && this.messageRequired[portIndex]) {
                 Log.info(Thread.currentThread().getName() + ": WakeUp blocked Receiver");
                 this.synchReceive.V();
+                //Reset isEmptyRequest because if a sendTo() occurs before receiveFrom() 
+                //recovers and acquires the lock on synchronized, it makes a further V()
+                //that wake up illegally the process to the next P()
+                this.isEmptyRequest = true;
             }
         }
         this.vector.get(portIndex).sendTo(message, name);
@@ -92,7 +96,6 @@ public class PortVector<T> {
         for (int i = 0; i < this.numberOfPorts; i++) {
             this.messageRequired[i] = false;
         }
-        this.isEmptyRequest = true;
     } 
 
 

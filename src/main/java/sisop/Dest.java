@@ -4,32 +4,36 @@ import java.lang.Thread;
 import java.lang.Integer;
 import sisop.SynchPort;
 import sisop.PortVector;
+import sisop.Server;
 import sisop.logging.Log;
 
 
 
 public class Dest extends Thread {
-    public PortVector<Integer> port = new PortVector<Integer>(5);
-    public String name;
-    int[] array = new int[5];
-    int arrayLength;
+    // public PortVector<Integer> port = new PortVector<Integer>(5);
+    // public String name;
+    // int[] array = new int[5];
+    // int arrayLength;
+    Server server;
 
-    public Dest(String name){
-        super(name);
-        this.name = name;
-        for (int i = 0; i < 5; i++) {
-            array[i] = i;
-        }
-        arrayLength = 5;
+    public Dest(Server s){
+        super("Dest");
+        this.server = s;
+        // this.name = name;
+        // for (int i = 0; i < 5; i++) {
+        //     array[i] = i;
+        // }
+        // arrayLength = 5;
     }
     public void run () {
         try {
-            MessageReceived<Integer> app;
-            while (true){
-                Thread.sleep(200);
-                Log.info(Thread.currentThread().getName() + ": receiveFrom()");
-                app = port.receiveFrom(array, arrayLength);
-                Log.info(Thread.currentThread().getName() + ": Received. Data: " + app.message + " from: " + app.threadName + " from port: " + app.portIndex);
+            Message<Integer> app;
+            int cycle = 0;
+            while (cycle<20){
+                cycle++;
+                Thread.sleep(2000);
+                app = this.server.receiveFrom();
+                //Log.info(Thread.currentThread().getName() + ": Received. Data: " + app.message + " from: " + app.threadName);
             }
         }
         catch (Exception e) {
@@ -37,9 +41,9 @@ public class Dest extends Thread {
         }
     }
 
-    public PortVector<Integer> getPort() {
-        return this.port;
-    }
+    // public PortVector<Integer> getPort() {
+    //     return this.port;
+    // }
     
     // public String getName() {
     //     return this.name;;

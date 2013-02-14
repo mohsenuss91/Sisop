@@ -5,13 +5,14 @@ import sisop.SynchPort;
 import sisop.PortVector;
 import sisop.Mitt;
 import sisop.Dest;
+import sisop.Server;
 import sisop.logging.Log;
 import java.lang.Thread;
 import java.lang.Integer;
 
 public class Test{
-    public static Dest[] dest = new Dest[5];
-    
+    //public static Dest[] dest = new Dest[5];
+    public static Server server = new Server();
     public static void main(String[] args) {
         
         //--------------Test Semaphore-------------
@@ -63,28 +64,44 @@ public class Test{
         //-------------------------------------------
 
         //-------------Test PortVector---------------
+        // try {
+        //     Log.setup("../test.log");
+        //     Mitt[] mitt = new Mitt[50];
+        //     for (int j = 0; j < 5; j++) {
+        //         dest[j] = new Dest("Dest" + j);
+        //         dest[j].start();
+        //     }
+        //     for (int i = 0; i < 50; i++) {
+        //         mitt[i] = new Mitt("Mitt" + i);
+        //         mitt[i].start();
+        //     }
+                      
+        // }
+        // catch (Exception e) {
+        //     Log.info("Errore Test" + e);
+        // }
+
+        //--------------------------------------------
+        
+        //-------------Test Mailbox------------------
         try {
             Log.setup("../test.log");
-            Mitt[] mitt = new Mitt[50];
-            for (int j = 0; j < 5; j++) {
-                dest[j] = new Dest("Dest" + j);
-                dest[j].start();
-            }
-            for (int i = 0; i < 50; i++) {
-                mitt[i] = new Mitt("Mitt" + i);
+            server.start();
+            Mitt[] mitt = new Mitt[5];
+            Dest dest = new Dest(server);
+            for (int i = 0; i < 5; i++) {
+                mitt[i] = new Mitt(i, server); 
                 mitt[i].start();
             }
-                      
+            dest.start();
         }
         catch (Exception e) {
-            Log.info("Errore Test" + e);
+            
         }
-        
-        
     }
 
 
-    public static Dest getDest(int n) {
-        return dest[n];
-    }
+    // public static Dest getDest(int n) {
+    //     return dest[n];
+    // }
 }

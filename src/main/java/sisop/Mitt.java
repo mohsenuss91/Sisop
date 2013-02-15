@@ -56,14 +56,16 @@ public class Mitt extends Thread {
             // this.port.sendTo(k, 1,Thread.currentThread().getName());
             // Log.info(Thread.currentThread().getName() + ": Message received");
             
-
+            int number;
             for (int i = 0; i < 4; i++) {
-                this.port.sendTo(this.priority, 5, Thread.currentThread().getName());
-                Thread.sleep(200);
+                number = (int)(Math.random()*100);
+                Log.info(Thread.currentThread().getName() + ": Send number " + number);
+                this.port.sendTo(this.priority, number, Thread.currentThread().getName());
+                Thread.sleep(i*1000);
             }
 }
         catch (Exception e) {
-            
+            Log.severe("Mitt Error " + e);
         }
     }
     

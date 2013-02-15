@@ -2,6 +2,7 @@ package sisop;
 
 import sisop.FairSemaphore;
 import sisop.logging.Log;
+
 import java.util.Vector;
 
 
@@ -23,31 +24,31 @@ public class SynchPort<T> {
     public void sendTo( T message, String name ) {
         Message<T> app = new Message<T>(message, name);
         synchAdd.P();
-        synchronized(buffer){
+        synchronized(buffer) {
             try {
-                buffer.setElementAt(app, tail);    
+                this.buffer.setElementAt(app, this.tail);    
             }
             catch (ArrayIndexOutOfBoundsException e) {
-                buffer.add(tail, app);
+                this.buffer.add(this.tail, app);
             }
-            tail = (tail+1)%maxDim;
-            Log.info(Thread.currentThread().getName() + ": Insert message in port");
+            this.tail = (this.tail+1)%this.maxDim;
+            // Log.info(Thread.currentThread().getName() + ": Insert message in port");
             synchReceive.V();
-            //Log.info(Thread.currentThread().getName() + ": Wait until message received");
+            // Log.info(Thread.currentThread().getName() + ": Wait until message received");
         }
         synchRemove.P();
         synchAdd.V();
     }
 
     public Message<T> receiveFrom() {
-        //Log.info(Thread.currentThread().getName() + ": Start receive");
+        // Log.info(Thread.currentThread().getName() + ": Start receive");
         Message<T> app;
         synchReceive.P();
-        synchronized(buffer){
-            app = buffer.get(head);
-            head = (head+1)%maxDim;
+        synchronized(this.buffer){
+            app = this.buffer.get(this.head);
+            this.head = (this.head+1)%this.maxDim;
         
-            //Log.info(Thread.currentThread().getName() + ": Extract message");
+            // Log.info(Thread.currentThread().getName() + ": Extract message");
             synchRemove.V();
         }
         return app;

@@ -2,8 +2,9 @@ package sisop;
 
 import sisop.SynchPort;
 import sisop.logging.Log;
-import java.util.Vector;
 import sisop.FairSemaphore;
+
+import java.util.Vector;
 
 
 public class PortVector<T> {
@@ -33,12 +34,12 @@ public class PortVector<T> {
     }
 
     public void sendTo(int portIndex, T message, String name) {
-        //Log.info(name + ": PortVector sendTo()");
-        synchronized(messageInQueue){
+        // Log.info(name + ": PortVector sendTo()");
+        synchronized(this.messageInQueue) {
             this.messageInQueue[portIndex]++;
             this.countMessage++;
             if (!this.isEmptyRequest && this.messageRequired[portIndex]) {
-                Log.info(Thread.currentThread().getName() + ": WakeUp blocked Receiver");
+                // Log.info(Thread.currentThread().getName() + ": WakeUp blocked Receiver");
                 this.synchReceive.V();
                 //Reset isEmptyRequest because if a sendTo() occurs before receiveFrom() 
                 //recovers and acquires the lock on synchronized, it makes a further V()
@@ -51,7 +52,7 @@ public class PortVector<T> {
 
     public MessageReceived<T> receiveFrom(int[] portIndex, int length) {
         int index = -1;
-        synchronized(messageInQueue){
+        synchronized(this.messageInQueue) {
             if (this.countMessage > 0) {
                 //Check if there is a message in required port
                 index = getIndex(portIndex, length);
@@ -62,18 +63,18 @@ public class PortVector<T> {
             }
         }
         if (index == -1) {
-            Log.info(Thread.currentThread().getName() + ": Wait message");
+            // Log.info(Thread.currentThread().getName() + ": Wait message");
             synchReceive.P();
-            Log.info(Thread.currentThread().getName() + ": WakeUp");
+            // Log.info(Thread.currentThread().getName() + ": WakeUp");
             //Wakeup by a sendTo in a required port
-            synchronized(messageInQueue){
+            synchronized(this.messageInQueue) {
                 //Check the first message in required port
                 index = getIndex(portIndex, length);
                 //Reset the request
                 resetPorts();
             }    
         }        
-        //Log.info(Thread.currentThread().getName() + " Index: " + index);
+        // Log.info(Thread.currentThread().getName() + " Index: " + index);
         Message<T> app;
         app = this.vector.get(index).receiveFrom();
         MessageReceived<T> result = new MessageReceived<T>(app.message, app.threadName, index);

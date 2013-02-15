@@ -1,8 +1,11 @@
 package sisop;
 
-import java.util.*;
-import java.lang.Thread;
 import sisop.logging.Log;
+
+import java.util.Vector;
+import java.util.List;
+import java.util.ArrayList;
+import java.lang.Thread;
 
 
 public class FairSemaphore{
@@ -30,14 +33,14 @@ public class FairSemaphore{
             Thread t = Thread.currentThread(); 
             if (this.value == 0) {
                 this.inQueue++;
-                queue.add(t);
-                //Log.info("FairSemaphore: " + t.getName() + " Wait");
-                while(t != toWake) wait();
-                //Log.info("FairSemaphore: " + t.getName() + " WakeUp");
+                this.queue.add(t);
+                // Log.info("FairSemaphore: " + t.getName() + " Wait");
+                while(t != this.toWake) wait();
+                // Log.info("FairSemaphore: " + t.getName() + " WakeUp");
             }
             this.value--;
             this.toWake = null;
-            //Log.info("FairSemaphore: " + t.getName() + " Do somethings");
+            // Log.info("FairSemaphore: " + t.getName() + " Do somethings");
         }
         catch (InterruptedException e) {
             Log.severe("Wait Error " + e);
@@ -47,7 +50,7 @@ public class FairSemaphore{
     public synchronized void V(){
         this.value++;
         if (this.inQueue != 0) {
-            toWake = queue.remove(0);
+            this.toWake = this.queue.remove(0);
             this.inQueue--;
             notifyAll();
         }

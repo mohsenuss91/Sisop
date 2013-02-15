@@ -31,13 +31,13 @@ public class Dest extends Thread {
             int cycle = 0;
             while (cycle<20){
                 cycle++;
-                Thread.sleep(2000);
+                // Thread.sleep(2000);
                 app = this.server.receiveFrom();
-                //Log.info(Thread.currentThread().getName() + ": Received. Data: " + app.message + " from: " + app.threadName);
+                Log.info(Thread.currentThread().getName() + ": Received data: " + app.message + " from: " + app.threadName);
             }
         }
         catch (Exception e) {
-            Log.info("Errore Dest" + e);   
+            Log.info("Dest Error " + e);   
         }
     }
 

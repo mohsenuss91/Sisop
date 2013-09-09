@@ -5,7 +5,7 @@ import sisop.SynchPort;
 import sisop.PortVector;
 import sisop.Mitt;
 import sisop.Dest;
-import sisop.Server;
+import sisop.Mailbox;
 import sisop.logging.Log;
 
 import java.lang.Thread;
@@ -88,12 +88,12 @@ public class Test{
         try {
             Log.setup("../test.log");
             Log.info("---------Program Start------------");
-            Server server = new Server();        
-            server.start();
+            Mailbox mailbox = new Mailbox();        
+            mailbox.start();
             Mitt[] mitt = new Mitt[5];
-            Dest dest = new Dest(server);
+            Dest dest = new Dest(mailbox);
             for (int i = 0; i < 5; i++) {
-                mitt[i] = new Mitt(i, server); 
+                mitt[i] = new Mitt(i, mailbox); 
                 mitt[i].start();
             }
             dest.start();

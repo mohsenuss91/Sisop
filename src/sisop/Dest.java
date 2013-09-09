@@ -4,7 +4,7 @@ import java.lang.Thread;
 import java.lang.Integer;
 import sisop.SynchPort;
 import sisop.PortVector;
-import sisop.Server;
+import sisop.Mailbox;
 import sisop.logging.Log;
 
 
@@ -14,11 +14,11 @@ public class Dest extends Thread {
     // public String name;
     // int[] array = new int[5];
     // int arrayLength;
-    Server server;
+    Mailbox mailbox;
 
-    public Dest(Server s){
+    public Dest(Mailbox m){
         super("Dest");
-        this.server = s;
+        this.mailbox = m;
         // this.name = name;
         // for (int i = 0; i < 5; i++) {
         //     array[i] = i;
@@ -32,7 +32,7 @@ public class Dest extends Thread {
             while (cycle<20){
                 cycle++;
                 // Thread.sleep(2000);
-                app = this.server.receiveFrom();
+                app = this.mailbox.receiveFrom();
                 Log.info(Thread.currentThread().getName() + ": Received data: " + app.message + " from: " + app.threadName);
             }
         }

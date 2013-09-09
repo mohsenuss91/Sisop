@@ -18,8 +18,8 @@ import java.lang.Integer;
 import java.util.Vector;
 
 
-public class Server extends Thread {
-    PortVector<Integer> mailbox;
+public class Mailbox extends Thread {
+    PortVector<Integer> portVector;
     FairSemaphore synchAdd, synchReceive;
     Vector<Message<Integer>> buffer;
     int head, tail;
@@ -29,9 +29,9 @@ public class Server extends Thread {
     /**
      * Create a mailbox with a buffer of three elements that receive message from five senders 
      */
-    public Server() {
-        super("Server");
-        this.mailbox = new PortVector<Integer>(5);
+    public Mailbox() {
+        super("Mailbox");
+        this.portVector = new PortVector<Integer>(5);
         this.synchAdd = new FairSemaphore(3);
         this.synchReceive = new FairSemaphore(0);
         this.buffer = new Vector<Message<Integer>>(3);
@@ -53,7 +53,7 @@ public class Server extends Thread {
         Message<Integer> message;
         while (true) {
             synchAdd.P();
-            messageReceived = this.mailbox.receiveFrom(this.portSelected, this.portNumber);
+            messageReceived = this.portVector.receiveFrom(this.portSelected, this.portNumber);
             message = new Message<Integer>(messageReceived.message, messageReceived.threadName);
             synchronized(this.buffer) {
                 try {
@@ -88,12 +88,12 @@ public class Server extends Thread {
     }
     
     /**
-     * Make available the mailbox
+     * Make available the portVector
      *
      * @return A PortVector<T> that represent the mailbox
      */
     public PortVector<Integer> getPort() {
-        return this.mailbox;
+        return this.portVector;
     }
 
 }

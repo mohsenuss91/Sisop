@@ -6,7 +6,7 @@ import sisop.SynchPort;
 import sisop.PortVector;
 import sisop.Dest;
 import sisop.Test;
-import sisop.Server;
+import sisop.Mailbox;
 import sisop.logging.Log;
 import java.lang.Math;
 
@@ -16,17 +16,17 @@ import java.lang.Math;
 public class Mitt extends Thread {
     PortVector<Integer> port;
     //Dest[] dest = new Dest[4];
-    Server server;
+    Mailbox mailbox;
     int priority;
-    public Mitt(int p, Server s) {
+    public Mitt(int p, Mailbox m) {
         super("Mitt" + p);
         // dest[0] = Test.getDest((int)(Math.random()*10)%5);
         // dest[1] = Test.getDest((int)(Math.random()*10)%5);
         // dest[2] = Test.getDest((int)(Math.random()*10)%5);
         // dest[3] = Test.getDest((int)(Math.random()*10)%5);        
-        this.server = s;
+        this.mailbox = m;
         this.priority = p;
-        this.port = s.getPort();
+        this.port = m.getPort();
     }
 
     public void run () {

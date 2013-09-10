@@ -2,6 +2,7 @@ package sisop;
 
 import sisop.FairSemaphore;
 import sisop.logging.Log;
+import sisop.Message;
 
 import java.util.Vector;
 
@@ -69,29 +70,5 @@ public class SynchPort<T> {
             synchRemove.V();
         }
         return app;
-    }
-}
-
-
-
-/**
- * A support class that will be used for saving the message and the thread name
- * in the same object
- */
-
-
-class Message<T> {
-    T message;
-    String threadName;
-
-    /**
-     * Create a Message with specific parameters
-     *
-     * @param data The message that will be saved
-     * @param name The name of tne sender thread
-     */
-    Message( T data, String name) {
-        this.message = data;
-        this.threadName = name;
     }
 }

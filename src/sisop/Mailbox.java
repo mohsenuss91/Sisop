@@ -82,7 +82,6 @@ public class Mailbox extends Thread {
             message = this.buffer.get(this.head);
             this.head = (this.head+1)%3;
         }
-        // Log.info(Thread.currentThread().getName() + ": Message received from: " + message.threadName + " Value: " + message.message);
         synchAdd.V();
         return message;
     }

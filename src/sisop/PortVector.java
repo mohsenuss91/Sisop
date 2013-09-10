@@ -56,7 +56,6 @@ public class PortVector<T> {
      * @param name The name of the sender thread
      */
     public void sendTo(int portIndex, T message, String name) {
-        // Log.info(name + ": PortVector sendTo()");
         synchronized(this.messageInQueue) {
             this.messageInQueue[portIndex]++;
             this.countMessage++;

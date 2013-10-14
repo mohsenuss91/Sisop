@@ -17,7 +17,7 @@ public class Dest extends Thread {
     int[] portIndex = new int[portNumber];
 
     public Dest(Mailbox m){
-        super("Dest");
+        super("ric");
         this.mailbox = m;
         this.port = m.outPortVector;
         this.portIndex[0] = 0; //Set the required port to receive the message

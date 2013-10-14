@@ -19,7 +19,7 @@ public class Mitt extends Thread {
     int priority;
 
     public Mitt(int p, Mailbox m) {
-        super("Mitt" + p);
+        super("Mitt" + (p+1));
         this.mailbox = m;
         this.priority = p;
         this.port = m.inPortVector;

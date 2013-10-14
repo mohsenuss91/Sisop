@@ -1,26 +1,26 @@
 package sisop;
 
 /**
- * A support class that will be used for saving the message and the thread name
- * in the same object 
- * @author Samuele Dal Porto
- * @author Davide Pellegrino
- *
+ * A support class that will be used for saving the message, the thread name
+ * in the same object and the index of selected port
  */
 
-public class Message<T> {
+public class MessageReceived<T> {
     T message;
     String threadName;
-
+    int portIndex;
+    
     /**
-     * Create a Message with specific parameters
+     * Create a MessageReceived with specific parameters
      *
      * @param data The message that will be saved
      * @param name The name of tne sender thread
+     * @param index The index of selected port
      */
-    public Message( T data, String name) {
+    MessageReceived(T data, String name, int index) {
         this.message = data;
         this.threadName = name;
+        this.portIndex = index;
     }
 
     /**
@@ -39,5 +39,14 @@ public class Message<T> {
      */
     public String getName(){
         return this.threadName;
+    }
+
+    /**
+     * Return the index
+     *
+     * @return the index of the port
+     */
+    public int getIndex(){
+        return this.portIndex;
     }
 }

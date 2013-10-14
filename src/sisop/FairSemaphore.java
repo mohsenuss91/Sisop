@@ -19,7 +19,7 @@ import java.lang.Thread;
 public class FairSemaphore{
     int value;
     int inQueue;
-    Thread toWake;
+    List<Thread> toWakeQueue = new ArrayList<Thread>();
     List<Thread> queue = new ArrayList<Thread>();
     
     /**
@@ -45,7 +45,7 @@ public class FairSemaphore{
      *
      * @return true if there is not a thread waiting on the semaphore, false otherwise
      */
-    public boolean isEmpty() {
+    public synchronized boolean isEmpty() {
         return (inQueue == 0)?true:false;
     }
 
@@ -55,14 +55,26 @@ public class FairSemaphore{
 
     public synchronized void P() {
         try {
+            boolean isWake = false;
             Thread t = Thread.currentThread(); 
             if (this.value == 0) {
                 this.inQueue++;
                 this.queue.add(t);
-                while(t != this.toWake) wait();
+                while(!isWake){
+                    for (int index = 0; index < this.toWakeQueue.size(); index++) {
+                        if (t == this.toWakeQueue.get(index) ) {
+                            isWake = true;
+                            this.toWakeQueue.remove(index);
+                        }
+                    }
+                    if (!isWake) {
+                        // Log.info("FairSemaphore: " + t.getName() + " Wait");
+                        wait();   
+                    }
+                }
+                // Log.info("FairSemaphore: " + t.getName() + " Wakeup");
             }
             this.value--;
-            this.toWake = null;
         }
         catch (InterruptedException e) {
             Log.severe("Wait Error " + e);
@@ -76,7 +88,9 @@ public class FairSemaphore{
     public synchronized void V(){
         this.value++;
         if (this.inQueue != 0) {
-            this.toWake = this.queue.remove(0);
+            Thread t = this.queue.remove(0);
+            // Log.info("Wake up: " + t.getName());
+            this.toWakeQueue.add(t);
             this.inQueue--;
             notifyAll();
         }

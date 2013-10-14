@@ -19,10 +19,10 @@ import java.util.Vector;
 
 
 public class Mailbox extends Thread {
-    PortVector<Integer> portVector;
-    FairSemaphore synchAdd, synchReceive;
+    public PortVector<Integer> inPortVector, outPortVector;
     Vector<Message<Integer>> buffer;
-    int head, tail;
+    int recPortIndex = 0; //Index of receiving port: fixed to zero becaouse the outPortVector is composed of a single SynchPort.
+    int head, tail, count, maxDim;
     int[] portSelected;
     int portNumber;
     
@@ -31,68 +31,60 @@ public class Mailbox extends Thread {
      */
     public Mailbox() {
         super("Mailbox");
-        this.portVector = new PortVector<Integer>(5);
-        this.synchAdd = new FairSemaphore(3);
-        this.synchReceive = new FairSemaphore(0);
-        this.buffer = new Vector<Message<Integer>>(3);
-        this.portSelected = new int[5];
+        this.maxDim = 3;
+        this.portNumber = 5;
+        this.inPortVector = new PortVector<Integer>(this.portNumber);
+        this.outPortVector = new PortVector<Integer>(1);
+        this.buffer = new Vector<Message<Integer>>(this.maxDim);
+        this.portSelected = new int[this.portNumber];
         this.tail = 0;
         this.head = 0;
-        this.portNumber = 5;
-        for (int i = 0; i < 5; i++) {
+        this.count = 0;
+        for (int i = 0; i < this.portNumber; i++) {
             this.portSelected[i] = i;
         }
     }
 
+
     /**
-     * Run a loop where every time, if there is free space into the buffer, it receives a message from the
-     * first available sender. It inserts the message and signals the receiver a new one is available.
+     * Run a loop where every time send a message to the receiver, if there are at least one element in buffer and the receiver had required a message 
+     * or the buffer is full, and receive a message from the senders, if there is at least one free element in the buffer and one sender had sent a message 
+     * or the buffer is empty
+     *
      */
     public void run() {
-        MessageReceived<Integer> messageReceived;
-        Message<Integer> message;
-        while (true) {
-            synchAdd.P();
-            messageReceived = this.portVector.receiveFrom(this.portSelected, this.portNumber);
-            message = new Message<Integer>(messageReceived.message, messageReceived.threadName);
-            synchronized(this.buffer) {
-                try {
-                    this.buffer.setElementAt(message, this.tail);    
+            Message<Integer> message;
+            MessageReceived<Integer> messageReceived;
+            while (true) {
+                try {        
+                    //Send a message to the receiver if there are at least one element in buffer and the receiver had required a message
+                    //or the buffer is full
+                    if (this.count != 0 && !this.outPortVector.isEmpty() || this.count == maxDim) {
+                        message = this.buffer.get(this.head);
+                        this.head = (this.head+1)%3;
+                        this.count--;
+                        Log.info(Thread.currentThread().getName() + ": invio messaggio al destinatario");
+                        this.outPortVector.sendTo(this.recPortIndex, message.message, message.threadName);
+                    }
+                    //Receive a message from the senders if there is at least one free element in the buffer and one sender had sent a message 
+                    //or the buffer is empty
+                    if (this.count < this.maxDim && !this.inPortVector.isEmpty() || this.count == 0) {
+                        messageReceived = this.inPortVector.receiveFrom(this.portSelected, this.portNumber);
+                        Log.info(Thread.currentThread().getName() + ": ricevo un messaggio da: " + messageReceived.getName());
+                        message = new Message<Integer>(messageReceived.getMessage(), messageReceived.getName());
+                        try {
+                            this.buffer.setElementAt(message, this.tail);    
+                        }
+                        catch (ArrayIndexOutOfBoundsException e) {
+                            this.buffer.add(this.tail, message);
+                        }
+                        this.tail = (this.tail+1)%3;
+                        this.count++;
+                    }
                 }
-                catch (ArrayIndexOutOfBoundsException e) {
-                    this.buffer.add(this.tail, message);
+                catch (Exception e) {
+                    Log.info(Thread.currentThread().getName() + " Error " + e);   
                 }
-                this.tail = (this.tail+1)%3;   
             }
-            Log.info(Thread.currentThread().getName() + ": Message received from: " + message.threadName);                
-            synchReceive.V();
-        }
     }
-
-
-    /**
-     * Extract a message from the buffer, if there is one, and return it
-     *
-     * @return A Message<T> that contains the data and the name of the sender thread
-     */
-    public Message<Integer> receiveFrom() {
-        Message<Integer> message;
-        synchReceive.P();
-        synchronized(this.buffer) {
-            message = this.buffer.get(this.head);
-            this.head = (this.head+1)%3;
-        }
-        synchAdd.V();
-        return message;
-    }
-    
-    /**
-     * Make available the portVector
-     *
-     * @return A PortVector<T> that represent the mailbox
-     */
-    public PortVector<Integer> getPort() {
-        return this.portVector;
-    }
-
 }

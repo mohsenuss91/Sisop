@@ -50,9 +50,9 @@ public class SynchPort<T> {
                 this.buffer.add(this.tail, app);
             }
             this.tail = (this.tail+1)%this.maxDim;
-            synchReceive.V();
+            this.synchReceive.V();
         }
-        synchRemove.P();
+        this.synchRemove.P();
     }
 
     /**
@@ -63,11 +63,11 @@ public class SynchPort<T> {
      */
     public Message<T> receiveFrom() {
         Message<T> app;
-        synchReceive.P();
+        this.synchReceive.P();
         synchronized(this.buffer){
             app = this.buffer.get(this.head);
             this.head = (this.head+1)%this.maxDim;
-            synchRemove.V();
+            this.synchRemove.V();
         }
         return app;
     }

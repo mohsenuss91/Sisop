@@ -3,6 +3,8 @@ package sisop;
 import sisop.SynchPort;
 import sisop.logging.Log;
 import sisop.FairSemaphore;
+import sisop.MessageReceived;
+import sisop.Message;
 
 import java.util.Vector;
 
@@ -16,7 +18,7 @@ import java.util.Vector;
  */
 
 public class PortVector<T> {
-    public static final int PORT_DIM = 1; 
+    static final int PORT_DIM = 5; //Number of senders for every SynchPort
     Vector<SynchPort<T>> vector;
     FairSemaphore synchReceive;
     int[] messageInQueue;
@@ -90,7 +92,7 @@ public class PortVector<T> {
             }
         }
         if (index == -1) {
-            synchReceive.P();
+            this.synchReceive.P();
             //Wakeup by a sendTo in a required port
             synchronized(this.messageInQueue) {
                 //Check the first message in required port
@@ -100,6 +102,7 @@ public class PortVector<T> {
             }    
         }        
         Message<T> app;
+        SynchPort<T> prova = this.vector.get(index);
         app = this.vector.get(index).receiveFrom();
         MessageReceived<T> result = new MessageReceived<T>(app.message, app.threadName, index);
         return result;
@@ -131,34 +134,23 @@ public class PortVector<T> {
             if (this.messageInQueue[indexes[i]] > 0) {
                 index = indexes[i];
                 this.messageInQueue[index]--;
+                //If there is a requested message, countMessage must be decresed 
+                this.countMessage--;
                 break;
             }
         }
         return index;
+    }
+
+
+     /**
+     * Check if there are messages in the SynchPorts or the receiver is blocked for a new message.
+     *
+     * @return A boolean that is false if there are  at least one message in SynchPort or the receiver
+     * is blocked for a new message (in that case countMessage is zero), true otherwise.
+     */
+    public synchronized boolean isEmpty() {
+            return (this.countMessage == 0 && this.synchReceive.isEmpty())?true:false;
     } 
 
-}
-
-/**
- * A support class that will be used for saving the message, the thread name
- * in the same object and the index of selected port
- */
-
-class MessageReceived<T> {
-    T message;
-    String threadName;
-    int portIndex;
-    
-    /**
-     * Create a MessageReceived with specific parameters
-     *
-     * @param data The message that will be saved
-     * @param name The name of tne sender thread
-     * @param index The index of selected port
-     */
-    MessageReceived(T data, String name, int index) {
-        this.message = data;
-        this.threadName = name;
-        this.portIndex = index;
-    }
 }

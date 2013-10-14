@@ -22,7 +22,7 @@ public class Mitt extends Thread {
         super("Mitt" + p);
         this.mailbox = m;
         this.priority = p;
-        this.port = m.getPort();
+        this.port = m.inPortVector;
     }
 
     public void run () {
@@ -30,12 +30,13 @@ public class Mitt extends Thread {
             int number;
             for (int i = 0; i < 4; i++) {
                 number = (int)(Math.random()*100);
-                Log.info(Thread.currentThread().getName() + ": Send number " + number);
+                Log.info(Thread.currentThread().getName() + ": Send number " + number + " to port: " + this.priority);
                 this.port.sendTo(this.priority, number, Thread.currentThread().getName());
+                // Thread.sleep(3000);
             }
         }
         catch (Exception e) {
-            Log.severe("Mitt Error " + e);
+            Log.severe(Thread.currentThread().getName() + " Error " + e);
         }
     }
     
